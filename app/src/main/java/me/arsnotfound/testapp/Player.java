@@ -7,6 +7,8 @@ public class Player {
 
     private int ball;
 
+    private boolean isChecked;
+
     Player() {
         this("Someone", 0);
     }
@@ -32,12 +34,21 @@ public class Player {
         this.ball = ball;
     }
 
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
     static class CompBall implements Comparator<Player> {
         @Override
         public int compare(Player p1, Player p2) {
-            int m1 = p1.getBall();
-            int m2 = p2.getBall();
-            return Integer.compare(m1, m2);
+            if (p1.ball != p2.ball)
+                return Integer.compare(p1.ball, p2.ball);
+            else
+                return p1.name.compareTo(p2.name);
         }
     }
 }

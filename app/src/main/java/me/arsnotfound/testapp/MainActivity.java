@@ -4,9 +4,11 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import me.arsnotfound.testapp.databinding.ActivityMainBinding;
 
@@ -21,11 +23,9 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
-        PlayerAdapter adapter = new PlayerAdapter(this, players);
-        binding.listView.setAdapter(adapter);
-        binding.listView.setOnItemClickListener((parent, view, position, id) -> {
-            adapter.toggleChecked(position);
-        });
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        PlayerAdapter adapter = new PlayerAdapter(players);
+        binding.recyclerView.setAdapter(adapter);
 
         binding.addBtn.setOnClickListener(v -> {
             Player player = new Player(
@@ -34,15 +34,18 @@ public class MainActivity extends AppCompatActivity {
             );
 
             players.add(player);
-            players.sort(new Player.CompBall());
 
             binding.bestPlayerText.setText("Лучший игрок:" + players.get(players.size() - 1).getName());
-            adapter.notifyDataSetChanged();
+            adapter.notifyItemInserted(players.size() - 1);
         });
 
         binding.selectBtn.setOnClickListener(v -> {
             StringBuilder result = new StringBuilder();
-            List<String> resultList = adapter.getCheckedItems();
+            List<String> resultList = new ArrayList<>();
+            for (Player p: players) {
+                if (p.isChecked())
+                    resultList.add(p.getName());
+            }
 
             for (int i = 0; i < resultList.size(); i++) {
                 result.append("\n");
@@ -50,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             binding.selectedText.setText("Выбрано: " + result);
-            Toast.makeText(getApplicationContext(), result.toString(), Toast.LENGTH_LONG).show();
         });
 
     }

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:weightSum="3"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -11,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:orientation="vertical"
+        android:layout_weight="0.25"
         android:weightSum="1">
 
         <LinearLayout
@@ -74,12 +76,14 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:text="Выбор"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:layout_weight="0.25"/>
 
-    <ListView
-        android:id="@+id/list_view"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_margin="5dp"
-        android:choiceMode="multipleChoice" />
+        android:choiceMode="multipleChoice"
+        android:layout_weight="2.5"/>
 </LinearLayout>

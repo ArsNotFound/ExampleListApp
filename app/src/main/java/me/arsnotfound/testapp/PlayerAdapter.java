@@ -1,85 +1,59 @@
 package me.arsnotfound.testapp;
 
-import android.content.Context;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import me.arsnotfound.testapp.databinding.ListItemBinding;
 
-public class PlayerAdapter extends ArrayAdapter<Player> {
-    private final LayoutInflater inflater;
-
+public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerViewHolder> {
     private final List<Player> players;
 
-    private final SparseBooleanArray mCheckedMap = new SparseBooleanArray();
-
-    public PlayerAdapter(Context context, List<Player> players) {
-        super(context, 0, players);
-
+    public PlayerAdapter(List<Player> players) {
         this.players = players;
-        this.inflater = LayoutInflater.from(context);
-
-        for (int i = 0; i < players.size(); i++) {
-            mCheckedMap.put(i, false);
-        }
     }
 
-    void toggleChecked(int position) {
-        mCheckedMap.put(position, !mCheckedMap.get(position));
-        notifyDataSetChanged();
-    }
+    @NonNull
+    @Override
+    public PlayerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        ListItemBinding binding = ListItemBinding.inflate(layoutInflater, parent, false);
+        PlayerViewHolder holder = new PlayerViewHolder(binding);
 
-    List<String> getCheckedItems() {
-        List<String> checkedItems = new ArrayList<>();
-        for (int i = 0; i < mCheckedMap.size(); i++) {
-            if (mCheckedMap.get(i)) {
-                (checkedItems).add(players.get(i).getName());
-            }
-        }
-        return checkedItems;
+        binding.getRoot().setOnClickListener(v -> onItemClick(holder));
+
+        return holder;
     }
 
     @Override
-    public int getCount() {
+    public void onBindViewHolder(@NonNull PlayerViewHolder holder, int position) {
+        Player player = players.get(position);
+        holder.binding.name.setText(player.getName());
+        holder.binding.count.setText(String.format(Locale.getDefault(), "%d", player.getBall()));
+    }
+
+    private void onItemClick(PlayerViewHolder holder) {
+        Player player = players.get(holder.getAbsoluteAdapterPosition());
+        player.setChecked(!player.isChecked());
+        holder.binding.selCheckbox.setChecked(player.isChecked());
+    }
+
+    @Override
+    public int getItemCount() {
         return players.size();
     }
 
-    @Override
-    public Player getItem(int position) {
-        return players.get(position);
-    }
+    public static class PlayerViewHolder extends RecyclerView.ViewHolder {
+        private final ListItemBinding binding;
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    //создаем представление для отдельного эемента списка
-    @NonNull
-    @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        ListItemBinding binding;
-        if (convertView == null)
-            binding = ListItemBinding.inflate(this.inflater, parent, false);
-        else
-            binding = ListItemBinding.bind(convertView);
-
-        Player player = players.get(position);
-        binding.name.setText(player.getName());
-        binding.count.setText(String.format(Locale.getDefault(), "%d", player.getBall()));
-
-        boolean checked = mCheckedMap.get(position);
-        binding.selCheckbox.setChecked(checked);
-
-        return binding.getRoot();
+        public PlayerViewHolder(@NonNull ListItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
     }
 }
